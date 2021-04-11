@@ -19,3 +19,24 @@ class LSTM(nn.Module):
         
         h = self.fc(h)
         return h
+
+   
+class SimpleLSTM(nn.Module):
+    def __init__(self, embedding_layer):
+        super().__init__()
+
+        self.emb = embedding_layer
+        self.bert_dim = 768 # берт по умолчанию
+        self.hidden_dim = 384
+        self.classes = 4
+        self.lstm = LSTM(self.bert_dim, self.hidden_dim, self.classes)
+
+    def forward(self, input):
+        x = self.emb(input)
+
+        h = torch.zeros((x.shape[0], self.hidden_dim)).cuda()
+        c = torch.zeros((x.shape[0], self.hidden_dim)).cuda()
+        #print("h, simple =", h.shape)
+        x = self.lstm(x, h, c)
+
+        return x
